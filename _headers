@@ -1,0 +1,7 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: bluetooth=(self), accelerometer=(self), gyroscope=(self)
+
+/sw.js
+  Cache-Control: no-cache

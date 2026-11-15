@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Web Companion, your life dashboard</title><meta name="theme-color" content="#0E0D0B"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="color-scheme" content="dark"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-title" content="Web Companion"><meta name="mobile-web-app-capable" content="yes"><meta name="description" content="Track health, mood, training, tasks and goals in one dashboard."><meta name="robots" content="index, follow">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0E0D0B;--panel:rgba(255,255,255,.04);--line:rgba(243,238,230,.1);--bone:#F3EEE6;--mute:#9A948A;--gold:#C9A96E;--sage:#8FA58B;--clay:#B8694F;--r:22px;--shadow:8px 8px 18px rgba(0,0,0,.55),-6px -6px 14px rgba(255,255,255,.03)}
+*{box-sizing:border-box;margin:0}
+body{font:400 15px/1.55 Manrope,system-ui,sans-serif;color:var(--bone);min-height:100vh;background:radial-gradient(1200px 700px at 80% -10%,#2a2318,transparent),radial-gradient(900px 600px at -10% 110%,#16202a,transparent),var(--ink)}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:300;letter-spacing:-.01em}
+h1{font-size:40px}h2{font-size:28px}h3{font-size:17px;font-weight:500}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+nav{position:sticky;top:0;height:100vh;padding:28px 16px;background:rgba(255,255,255,.02);backdrop-filter:blur(18px);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;overflow:auto}
+.brand{font-family:Fraunces,serif;font-size:24px;margin:0 10px 24px}
+nav button{all:unset;cursor:pointer;padding:10px 12px;border-radius:14px;color:var(--mute);transition:.25s}
+nav button:hover{color:var(--bone);background:var(--panel)}
+nav button.on{color:var(--bone);background:linear-gradient(145deg,rgba(201,169,110,.18),rgba(201,169,110,.04));box-shadow:inset 0 0 0 1px rgba(201,169,110,.3)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,nav button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+main{padding:36px clamp(16px,4vw,48px);max-width:1200px;width:100%}
+.head{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px;gap:16px;flex-wrap:wrap}
+.muted{color:var(--mute)}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.card{grid-column:span 2;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;backdrop-filter:blur(16px);box-shadow:var(--shadow)}
+.w3{grid-column:span 3}.w4{grid-column:span 4}.w6{grid-column:span 6}
+.big{font-family:Fraunces,serif;font-size:44px;font-weight:300;line-height:1}
+.bar{height:8px;border-radius:8px;background:rgba(0,0,0,.45);box-shadow:inset 2px 2px 4px rgba(0,0,0,.6);overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#e8d3a6);border-radius:8px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+input,select,textarea{font:inherit;color:var(--bone);background:rgba(0,0,0,.35);border:1px solid transparent;border-radius:14px;padding:10px 12px;box-shadow:inset 3px 3px 6px rgba(0,0,0,.5),inset -2px -2px 4px rgba(255,255,255,.03);width:100%}
+select option{background:#1a1814}
+.btn{font:600 14px Manrope,sans-serif;color:var(--ink);background:linear-gradient(145deg,#e3c58d,var(--gold));border:0;border-radius:14px;padding:10px 16px;cursor:pointer;box-shadow:0 6px 16px rgba(201,169,110,.25);transition:transform .2s}
+.btn:hover{transform:translateY(-1px)}
+.ghost{background:transparent;color:var(--mute);border:1px solid var(--line);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center}
+.row>*{flex:1}
+.row>.btn,.row>.pill,.row>.x{flex:0 0 auto}
+.list{list-style:none;padding:0;display:grid;gap:8px;margin-top:14px}
+.list li{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:rgba(0,0,0,.2);border:1px solid var(--line)}
+.list li.done span{text-decoration:line-through;color:var(--mute)}
+.list li span{flex:1}
+.chk{width:20px;height:20px;flex:0 0 20px;border-radius:7px;border:1px solid var(--gold);background:none;cursor:pointer}
+.chk.on{background:var(--gold)}
+.x{background:none;border:0;color:var(--mute);cursor:pointer;font-size:20px}
+.pill{font:500 12px Manrope,sans-serif;padding:5px 12px;border-radius:99px;background:rgba(143,165,139,.15);color:var(--sage);border:0}
+.chart{display:flex;align-items:flex-end;gap:6px;height:150px;margin:16px 0 26px}
+.chart div{flex:1;background:linear-gradient(180deg,var(--gold),rgba(201,169,110,.15));border-radius:8px 8px 4px 4px;min-height:3px;position:relative}
+.chart small{position:absolute;top:100%;left:50%;transform:translateX(-50%);font-size:10px;color:var(--mute);white-space:nowrap;padding-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:grid;gap:6px;font-size:13px;color:var(--mute)}
+@media(max-width:820px){.app{grid-template-columns:1fr}nav{position:fixed;bottom:0;top:auto;width:100%;height:auto;flex-direction:row;overflow-x:auto;border-right:0;border-top:1px solid var(--line);padding:8px;z-index:5;backdrop-filter:blur(20px)}.brand{display:none}nav button{white-space:nowrap}.card,.w3,.w4{grid-column:span 6}main{padding-bottom:110px}.grid2{grid-template-columns:1fr}}
+body.theme-glass{background:linear-gradient(135deg,#1b2a3a,#2b1f2e 50%,#0e1a16)}
+body.theme-glass .card{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);backdrop-filter:blur(24px) saturate(140%)}
+body.theme-glass nav{background:rgba(255,255,255,.05)}
+body.theme-neo{--panel:#17171b;--line:transparent}
+body.theme-neo .card{box-shadow:9px 9px 18px #0b0b0e,-9px -9px 18px #232329;border:0;backdrop-filter:none}
+body.theme-neo .list li{box-shadow:inset 3px 3px 6px #0b0b0e,inset -3px -3px 6px #232329;border-color:transparent}
+body.theme-bento .bento{gap:10px}
+body.theme-bento .card{--r:14px;border-color:rgba(243,238,230,.16);box-shadow:none}
+body.theme-minimal{background:#101010}
+body.theme-minimal .card{background:transparent;box-shadow:none;border-color:rgba(243,238,230,.08);backdrop-filter:none;padding:18px 0}
+body.theme-minimal nav{background:transparent;backdrop-filter:none}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:480px){h1{font-size:30px}h2{font-size:24px}.big{font-size:38px}main{padding:20px 14px 110px}.head{margin-bottom:20px}.card{padding:18px}button,.btn,.pill{min-height:40px}input,select,textarea{font-size:16px}}
+</style></head><body>
+<div class="app"><nav id="nav" aria-label="Sections"></nav><main id="main"></main></div>
+<script>
+const KEY='lumen.v1',$=s=>document.querySelector(s);
+const T=(d=new Date())=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const blank=()=>({onboarded:false,cfg:{trackers:{},stepGoal:8000},profile:{name:'',sex:'female',height:170,screenLimit:3},days:{},todos:[],goals:[],done:{},iq:null,cycleStart:null});
+const PKEY='wc.profiles',AKEY='wc.active',keyOf=id=>id==='p1'?KEY:'wc.'+id;
+let profiles=[];try{profiles=JSON.parse(localStorage.getItem(PKEY))||[]}catch(e){}
+if(!profiles.length)profiles=[{id:'p1',name:'Me',avatar:'🌿'}];
+let curId=localStorage.getItem(AKEY);if(!profiles.some(p=>p.id===curId))curId=profiles[0].id;
+const load=id=>{let x;try{x=JSON.parse(localStorage.getItem(keyOf(id)))}catch(e){try{x=JSON.parse(localStorage.getItem(keyOf(id)+'.bak'))}catch(e2){}}if(x&&!('onboarded' in x))x.onboarded=true;return Object.assign(blank(),x||{})};
+let S=load(curId);
+{const p=profiles.find(x=>x.id===curId);if(p&&S.profile.name)p.name=S.profile.name}
+
+const save=()=>{S.updatedAt=Date.now();try{const k=keyOf(curId),old=localStorage.getItem(k);if(old)localStorage.setItem(k+'.bak',old);localStorage.setItem(k,JSON.stringify(S))}catch(e){}if(window.webCompanionSync)window.webCompanionSync.schedule()};
+const day=(k=T())=>S.days[k]||(S.days[k]={});
+const num=v=>v===''||v==null?null:+v;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pct=(a,b)=>Math.min(100,Math.round(a/b*100))||0;
+const inp=(k,l,v,st='1')=>`<label>${l}<input name="${k}" type="number" step="${st}" min="0" value="${v??''}"></label>`;
+const MOODS=['Low','Okay','Steady','Good','Great'];
+const VIEWS=[['dash','Today'],['health','Health'],['mind','Mind'],['digital','Digital'],['iq','IQ'],['train','Training'],['todo','To do'],['goals','Roadmap'],['summary','Summary'],['me','Profile']];
+const Q=[['Which number comes next? 2, 6, 12, 20, 30, ?',['40','42','44','50'],1],['Which number comes next? 1, 1, 2, 3, 5, 8, ?',['11','12','13','21'],2],['Which one does not belong? 9, 16, 25, 30, 49',['9','16','30','49'],2],['Bee is to hive as bird is to ?',['Flower','Nest','Honey','Sky'],1],['All roses are flowers. Some flowers fade quickly. Which must be true?',['All roses fade quickly','Some roses may fade quickly','No roses fade','Roses never fade'],1],['Which number comes next? 3, 9, 27, 81, ?',['162','189','243','291'],2],['Which word does not belong? Apple, Banana, Carrot, Mango',['Apple','Banana','Carrot','Mango'],2],['If all Bloops are Razzies and all Razzies are Lazzies, which must be true?',['All Bloops are Lazzies','Some Lazzies are not Bloops','No Bloops are Lazzies','Cannot tell'],0],['What is the angle between the hour and minute hands at 3:00?',['60°','75°','90°','120°'],2],['Which fraction is largest?',['3/5','5/8','7/12','2/3'],3]];
+const TR={Cognitive:['Dual n-back, 10 minutes','Mental arithmetic, 20 problems','Memory palace walk-through','Learn and recall 10 new words','Reaction-time drill, 5 minutes'],Physical:['Brisk walk, 20 minutes','Push-up ladder, 5 rounds','Plank, 3 × 45 seconds','Mobility flow, 10 minutes','Single-leg balance, 3 × 30 seconds']};
+let view='dash',filt='all',range='week',lastIq=null,armed=false;
+
+let live={on:false,g:0,last:0,up:false,msg:''},hw={dev:null,bpm:null,msg:'Not connected. You can still log heart rate by hand.'};
+function series(f,n){const out=[],d=new Date();for(let i=0;i<n;i++){const k=T(d);out.unshift([k.slice(5),S.days[k]?.[f]??null]);d.setDate(d.getDate()-1)}return out}
+function line(pts,c,label,fmt){const v=pts.filter(p=>p[1]!=null);if(v.length<2)return `<p class="muted" style="font-size:13px">Log at least two days to see the ${label} trend.</p>`;
+const W=600,H=160,P=24,mx=Math.max(...v.map(p=>p[1])),mn=Math.min(...v.map(p=>p[1])),rg=(mx-mn)||1,id='g'+c.slice(1);
+const X=i=>P+i*(W-2*P)/Math.max(1,pts.length-1),Y=y=>H-P-(y-mn)/rg*(H-2*P);
+const pp=pts.map((p,i)=>p[1]==null?null:[X(i),Y(p[1])]).filter(Boolean);
+const d=pp.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' '),f0=pp[0],fl=pp[pp.length-1];
+return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label} trend" style="width:100%;height:auto;overflow:visible"><defs><linearGradient id="${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${c}" stop-opacity=".35"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></linearGradient></defs><path d="${d} L${fl[0]} ${H-P} L${f0[0]} ${H-P}Z" fill="url(#${id})"/><path d="${d}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linejoin="round"/><circle cx="${fl[0]}" cy="${fl[1]}" r="4" fill="${c}"/><text x="${P}" y="12" fill="#9A948A" font-size="12">High ${fmt(mx)}</text><text x="${P}" y="${H-4}" fill="#9A948A" font-size="12">Low ${fmt(mn)}</text></svg>`}
+function stride(){return S.profile.stride||Math.round(S.profile.height*0.415)}
+function stepCalc(st){const s=stride();return {str:s,km:st*s/100000,kcal:Math.round(st*0.04*((lastW()||70)/70))}}
+function onMotion(e){const a=e.accelerationIncludingGravity;if(!a)return;const m=Math.hypot(a.x||0,a.y||0,a.z||0);live.g=live.g*0.6+m*0.4;const now=Date.now();
+ if(!live.up&&live.g>11.2&&now-live.last>300){live.up=true;live.last=now;const t=day();t.steps=(t.steps||0)+1;t.stepSrc='sensor';if(t.steps%10===0)save();const el=document.getElementById('livec');if(el)el.textContent=t.steps.toLocaleString();const k=document.getElementById('livek');if(k){const c=stepCalc(t.steps);k.textContent=c.km.toFixed(2)+' km · about '+c.kcal+' kcal'}}
+ else if(live.up&&live.g<10.4)live.up=false}
+async function stepsStart(){try{if(typeof DeviceMotionEvent==='undefined'){live.msg='This device has no motion sensor. Enter steps by hand.'}else{if(typeof DeviceMotionEvent.requestPermission==='function'){const r=await DeviceMotionEvent.requestPermission();if(r!=='granted')throw 0}window.addEventListener('devicemotion',onMotion);live.on=true;live.msg='Counting. Carry the phone in a pocket or bag for best results.'}}catch(e){live.msg='Motion permission was declined or unavailable. Enter steps by hand.'}render()}
+function stepsStop(){window.removeEventListener('devicemotion',onMotion);live.on=false;live.msg='Counting stopped. Totals are saved.';save();render()}
+function stepCard(){const t=day(),st=t.steps||0,c=stepCalc(st);
+return `<div class="card w2"><h3>Steps</h3><div class="big" id="livec" style="font-size:36px;margin-top:12px">${st.toLocaleString()}</div><p class="muted" id="livek" style="font-size:13px;margin-top:8px">${c.km.toFixed(2)} km · about ${c.kcal} kcal · stride ${c.str} cm</p><div class="row" style="margin-top:14px"><button class="btn ghost" data-act="${live.on?'stepsStop':'stepsStart'}">${live.on?'Stop counting':'Count with phone'}</button></div><p class="muted" style="font-size:12px;margin-top:10px">${live.msg||'Uses the motion sensor. Counts vary by phone and placement, so check against a known walk.'}</p></div>`}
+async function watchConnect(){
+ if(!navigator.bluetooth){hw.msg='Bluetooth is not available in this browser. Try Chrome or Edge on Android or desktop.';return render()}
+ try{const dev=await navigator.bluetooth.requestDevice({filters:[{services:['heart_rate']}],optionalServices:['battery_service','device_information']});hw.dev=dev;
+  dev.addEventListener('gattserverdisconnected',()=>{hw.dev=null;hw.msg='Watch disconnected.';render()});
+  const srv=await (await dev.gatt.connect()).getPrimaryService('heart_rate');
+  const ch=await srv.getCharacteristic('heart_rate_measurement');await ch.startNotifications();
+  ch.addEventListener('characteristicvaluechanged',ev=>{const v=ev.target.value,bpm=(v.getUint8(0)&1)?v.getUint16(1,true):v.getUint8(1);hw.bpm=bpm;const t=day();t.hrSum=(t.hrSum||0)+bpm;t.hrN=(t.hrN||0)+1;t.hr=Math.round(t.hrSum/t.hrN);save();const el=document.getElementById('hrv');if(el)el.textContent=bpm});
+  hw.batt=null;hw.model=null;try{const bs=await dev.gatt.getPrimaryService('battery_service');hw.batt=(await (await bs.getCharacteristic('battery_level')).readValue()).getUint8(0)}catch(e){}try{const di=await dev.gatt.getPrimaryService('device_information');hw.model=new TextDecoder().decode(await (await di.getCharacteristic('model_number_string')).readValue())}catch(e){}
+  hw.msg='Connected to '+(dev.name||'your watch')+'. Heart rate is streaming.';
+ }catch(err){hw.msg=err&&err.name==='NotFoundError'?'No heart-rate device was chosen.':'Could not connect. Make sure the watch is broadcasting heart rate.'}
+ render()}
+function watchCard(){const t=day();
+return `<div class="card w2"><h3>Smartwatch</h3><p class="muted" style="margin:10px 0;font-size:13px">${navigator.bluetooth?'Pairs with any watch or strap that broadcasts heart rate over Bluetooth. Reads heart rate, battery, and model.':'Bluetooth pairing is not supported in this browser. Use Chrome or Edge, or enter heart rate by hand.'}</p><div class="big" style="font-size:36px"><span id="hrv">${hw.bpm||t.hr||'—'}</span><span class="muted" style="font-size:14px"> bpm</span></div>${hw.model?'<p class="muted" style="font-size:13px;margin-top:8px">'+esc(hw.model)+(hw.batt!=null?' · battery '+hw.batt+'%':'')+'</p>':''}<p class="muted" style="font-size:13px;margin-top:8px">${hw.msg}</p><div class="row" style="margin-top:14px"><button class="btn ghost" data-act="watch">${hw.dev?'Disconnect':'Connect watch'}</button></div></div>`}
+let impMsg='';
+function importWatch(j){let n=0;Object.entries(j).forEach(([k,v])=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(k)||typeof v!=='object'||!v)return;const t=day(k);if(v.steps!=null){t.steps=Math.round(+v.steps);t.stepSrc='watch'}if(v.sleep!=null)t.sleep=+(+v.sleep).toFixed(2);if(v.hr!=null)t.hr=Math.round(+v.hr);if(v.weight!=null)t.weight=+(+v.weight).toFixed(1);n++});save();impMsg=`Imported ${n} day${n===1?'':'s'} from your watch.`}
+function importCard(){return `<div class="card w2"><h3>Import from watch</h3><p class="muted" style="margin:10px 0;font-size:13px">Export a JSON file from the Web Companion companion app on Android, then choose it here. Works with watches that sync to Health Connect.</p><label>Choose file<input type="file" accept="application/json,.json" data-import></label><p class="muted" style="font-size:12px;margin-top:10px">${impMsg||'Steps, sleep, heart rate and weight replace the values for matching days.'}</p></div>`}
+function waterGoal(){return lastW()?Math.max(4,Math.round(lastW()*35/250)):8}
+let iqCur=null;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function iqSet(){return iqCur||(iqCur=shuffle(Q.map((q,qi)=>qi)).map(qi=>({qi,p:shuffle(Q[qi][1].map((_,k)=>k))})))}
+const SYMP=['Headache','Nausea','Fatigue','Cramps','Bloating','Low appetite','Poor sleep','Anxiety','Other'];
+function medCard(){const d=day(),taken=d.meds||{};return `<div class="card w3"><h3>Medications</h3><p class="muted" style="font-size:13px;margin:10px 0">A record of what you take. This is not medical advice. Follow your prescriber's instructions.</p><ul class="list">${(S.meds||[]).map(m=>`<li class="${taken[m.id]?'done':''}"><button type="button" class="chk ${taken[m.id]?'on':''}" data-act="medtake" data-k="${m.id}" aria-label="Taken today"></button><span>${esc(m.name)}${m.dose?' · '+esc(m.dose):''}</span><button type="button" class="x" data-act="meddel" data-k="${m.id}" aria-label="Remove medication">×</button></li>`).join('')||'<li><span class="muted">No medications added.</span></li>'}</ul><form data-form="med" class="grid2" style="margin-top:12px"><label>Name<input name="name" required></label><label>Dose<input name="dose" placeholder="e.g. 10 mg"></label><div style="grid-column:1/-1"><button class="btn ghost" style="width:100%">Add medication</button></div></form></div>`}
+function sympCard(){const d=day(),on=d.symptoms||[];return `<form class="card w3" data-form="symp"><h3>Symptoms today</h3><div class="grid2" style="margin:12px 0">${SYMP.map(s=>`<label style="color:var(--bone)"><input type="checkbox" name="s" value="${s}" ${on.includes(s)?'checked':''} style="width:auto;margin-right:6px">${s}</label>`).join('')}</div><label>Severity<select name="sev"><option value="1" ${d.sev==1?'selected':''}>Mild</option><option value="2" ${d.sev==2?'selected':''}>Moderate</option><option value="3" ${d.sev==3?'selected':''}>Severe</option></select></label><div class="row" style="margin-top:14px"><button class="btn">Save symptoms</button></div><p class="muted" style="font-size:12px;margin-top:10px">A record for your own review. See a doctor about symptoms that are severe or getting worse.</p></form>`}
+function reminderCard(){const r=S.reminders||[],perm=('Notification' in window)?Notification.permission:'unsupported';return `<div class="card w3"><h3>Reminders</h3><p class="muted" style="font-size:13px;margin:10px 0">Shows a notification at the set time while Web Companion is open in a browser tab. Reminders when the app is closed need a push service, which is not included.</p><ul class="list">${r.map(x=>`<li><span>${esc(x.label)} · ${x.time}</span><button type="button" class="x" data-act="remdel" data-k="${x.id}" aria-label="Remove reminder">×</button></li>`).join('')||'<li><span class="muted">No reminders set.</span></li>'}</ul><form data-form="rem" class="grid2" style="margin-top:12px"><label>Label<input name="label" placeholder="Take water" required></label><label>Time<input name="time" type="time" required></label><div style="grid-column:1/-1" class="row"><button class="btn ghost" style="flex:1">Add reminder</button>${perm==='granted'?'':`<button type="button" class="btn" data-act="remallow" style="flex:1">Allow notifications (${perm})</button>`}</div></form></div>`}
+function exportCard(){return `<div class="card w3"><h3>Export</h3><p class="muted" style="font-size:13px;margin:10px 0">Download every logged day as a spreadsheet file (CSV). Opens in Excel, Google Sheets, or Numbers.</p><div class="row"><button type="button" class="btn" data-act="csv">Download CSV</button></div><p class="muted" style="font-size:12px;margin-top:10px">PDF export is not included yet.</p></div>`}
+function exportCSV(){const cols=['steps','sleep','weight','water','mood','stress','screen','hr','workout','waist','protein'];const rows=[['date',...cols].join(',')].concat(Object.keys(S.days).sort().map(k=>[k,...cols.map(c=>S.days[k][c]??'')].join(',')));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));a.download='web-companion-'+T()+'.csv';document.body.appendChild(a);a.click();a.remove()}
+const fired={};
+function checkReminders(){const n=new Date(),hm=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');(S.reminders||[]).forEach(r=>{const key=r.id+T()+r.time;if(r.time===hm&&!fired[key]){fired[key]=1;if('Notification' in window&&Notification.permission==='granted')new Notification('Web Companion',{body:r.label})}})}
+setInterval(checkReminders,30000);
+const HIDE={water:'Water',steps:'Steps',sleep:'Sleep',mood:'Mood',screen:'Screen',training:'Training today',tasks:'Open tasks',meds:'Medications',symptoms:'Symptoms today',cycle:'Cycle',recovery:'Recovery',weight:'Weight',hr:'Heart rate'};
+const AV=['\U0001F33F','\U0001F319','\u2600\uFE0F','\U0001F525','\U0001F30A','\U0001F989','\U0001F3D4\uFE0F','\u2B50'];
+const PRESETS={
+ student:{label:'Student',desc:'Study sessions, sleep and screen limits.',trackers:['water','sleep','screen','mood','training','tasks'],stepGoal:6000,screenLimit:4},
+ desk:{label:'Desk worker',desc:'Movement breaks, steps and screen time.',trackers:['water','steps','screen','mood','tasks'],stepGoal:8000,screenLimit:6},
+ athlete:{label:'Athlete',desc:'Training, recovery, heart rate and weight.',trackers:['steps','sleep','hr','training','water','weight','recovery'],stepGoal:10000,screenLimit:3},
+ parent:{label:'New parent',desc:'Sleep, mood and the basics, kept simple.',trackers:['sleep','mood','water','meds','tasks'],stepGoal:5000,screenLimit:3},
+ recovery:{label:'Recovering from illness',desc:"Symptoms, medication and gentle movement. Follow your care team's plan.",trackers:['symptoms','meds','mood','sleep','water'],stepGoal:3000,screenLimit:2},
+ custom:{label:'Custom',desc:'Choose every tracker and goal yourself.',trackers:Object.keys(HIDE),stepGoal:8000,screenLimit:3}
+};
+let pendingDel=null,profMsg='',ob={type:null};
+const saveList=()=>{try{localStorage.setItem(PKEY,JSON.stringify(profiles))}catch(e){}};
+function avatarSelect(v){return `<label>Avatar<select name="avatar">${AV.map(a=>`<option value="${a}" ${a===v?'selected':''}>${a}</option>`).join('')}</select></label>`}
+function trackerBoxes(on){return `<div class="grid2">${Object.keys(HIDE).map(k=>`<label style="color:var(--bone)"><input type="checkbox" name="t" value="${k}" ${on.includes(k)?'checked':''} style="width:auto;margin-right:6px">${HIDE[k]}</label>`).join('')}</div>`}
+function switchTo(id){save();curId=id;localStorage.setItem(AKEY,id);S=load(id);view='dash';render()}
+function createProfile(name,avatar){const id='p'+Date.now();profiles.push({id,name,avatar});saveList();switchTo(id)}
+function finishOnboarding(meta,cfg,limit){S.profile.name=meta.name;S.profile.screenLimit=limit;S.cfg=cfg;S.onboarded=true;const p=profiles.find(x=>x.id===curId);if(p){p.name=meta.name;p.avatar=meta.avatar;saveList()}save();render()}
+function deleteProfile(id){try{localStorage.removeItem(keyOf(id))}catch(e){}profiles=profiles.filter(p=>p.id!==id);pendingDel=null;saveList();render()}
+function applyType(k){const p=PRESETS[k];S.cfg.trackers=Object.fromEntries(Object.keys(HIDE).map(t=>[t,p.trackers.includes(t)]));S.cfg.stepGoal=p.stepGoal;S.profile.screenLimit=p.screenLimit;save();render()}
+function exportCfg(){const p=profiles.find(x=>x.id===curId);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({name:S.profile.name||p.name,avatar:p.avatar,cfg:S.cfg,screenLimit:S.profile.screenLimit},null,2)],{type:'application/json'}));a.download='web-companion-setup.json';document.body.appendChild(a);a.click();a.remove()}
+function applyHidden(){const off=Object.keys(HIDE).filter(k=>S.cfg.trackers[k]===false).map(k=>HIDE[k]);document.querySelectorAll('#main .card').forEach(c=>{const el=c.querySelector('h3,p.muted');const l=el?el.textContent.trim():'';c.style.display=off.some(x=>l===x||l.startsWith(x+','))?'none':''})}
+function onboard(){
+ if(!ob.type)return `<div class="head"><div><p class="muted">Welcome</p><h1>Set up Web Companion</h1><p class="muted" style="margin-top:8px">Pick the type that fits you best. Everything can be changed later.</p></div></div><div class="bento">${Object.entries(PRESETS).map(([k,v])=>`<div class="card w3"><h3>${v.label}</h3><p class="muted" style="margin:10px 0;font-size:13px">${v.desc}</p><button type="button" class="btn ghost" data-act="obpick" data-k="${k}">Choose</button></div>`).join('')}</div>`;
+ const p=PRESETS[ob.type];
+ return `<div class="head"><div><p class="muted">Step 2 of 2 · ${p.label}</p><h1>Make it yours</h1></div><button type="button" class="btn ghost" data-act="obback">Back</button></div><form class="card w6" data-form="onboard"><div class="grid2"><label>Name<input name="name" required placeholder="Your name"></label>${avatarSelect(AV[0])}<label>Daily steps goal<input name="stepGoal" type="number" min="1000" step="500" value="${p.stepGoal}"></label><label>Daily screen limit (hours)<input name="screenLimit" type="number" step="0.5" value="${p.screenLimit}"></label></div><p class="muted" style="margin:16px 0 8px;font-size:13px">Show these trackers</p>${trackerBoxes(p.trackers)}<div class="row" style="margin-top:18px"><button class="btn">Create my profile</button></div></form>`}
+function profileCard(){return `<div class="card w6" style="margin-bottom:16px"><h3>Profiles</h3><ul class="list">${profiles.map(p=>`<li><span>${p.avatar} ${esc(p.name)}${p.id===curId?' <small class="muted">(active)</small>':''}</span>${p.id===curId?'':`<button type="button" class="btn ghost" data-act="switch" data-k="${p.id}">Switch</button><button type="button" class="btn ghost" data-act="pdel" data-k="${p.id}">${pendingDel===p.id?'Tap again to delete':'Delete'}</button>`}</li>`).join('')}</ul><div class="row" style="margin-top:12px;flex-wrap:wrap"><button type="button" class="btn" data-act="newprof">New profile</button><button type="button" class="btn ghost" data-act="cfgexport">Export setup</button><label style="flex:1 1 200px">Import setup<input type="file" accept="application/json,.json" data-import-cfg></label></div><p class="muted" style="font-size:12px;margin-top:10px">Each profile keeps its own data on this device. Exporting shares only the setup (name, avatar, trackers and goals), never logged data. ${profMsg}</p></div>`}
+function setupCard(){const c=S.cfg;return `<div class="card w6" style="margin-bottom:16px"><h3>Customize this profile</h3><p class="muted" style="font-size:13px;margin:10px 0">Start from a type, then adjust anything.</p><div class="row" style="flex-wrap:wrap;justify-content:flex-start">${Object.entries(PRESETS).map(([k,v])=>`<button type="button" class="pill" style="cursor:pointer;border:0" data-act="applytype" data-k="${k}">${v.label}</button>`).join('')}</div><form data-form="cfg" style="margin-top:14px"><div class="grid2"><label>Name<input name="name" value="${esc(S.profile.name||'')}"></label>${avatarSelect(profiles.find(p=>p.id===curId).avatar)}<label>Daily steps goal<input name="stepGoal" type="number" step="500" value="${c.stepGoal}"></label></div><p class="muted" style="margin:14px 0 8px;font-size:13px">Show these trackers</p>${trackerBoxes(Object.keys(HIDE).filter(k=>c.trackers[k]!==false))}<div class="row" style="margin-top:14px"><button class="btn">Save setup</button></div></form></div>`}
+document.addEventListener('change',e=>{const f=e.target;if(!f.matches||!f.matches('input[data-import-cfg]')||!f.files[0])return;f.files[0].text().then(t=>{try{const j=JSON.parse(t);if(!j.cfg||!j.cfg.trackers)throw 0;const nm=j.name||'Shared setup',av=j.avatar||'\U0001F33F';createProfile(nm,av);finishOnboarding({name:nm,avatar:av},{trackers:j.cfg.trackers,stepGoal:j.cfg.stepGoal||8000},j.screenLimit||3);profMsg='Profile setup imported.'}catch(err){profMsg='That file is not a valid profile setup.'}render()})});
+function streak(){let n=0,d=new Date();while(Object.keys(S.days[T(d)]||{}).length){n++;d.setDate(d.getDate()-1)}return n}
+function lastW(){const k=Object.keys(S.days).filter(k=>S.days[k].weight).sort().pop();return k?S.days[k].weight:null}
+function bmi(){const w=lastW(),h=S.profile.height/100;if(!w)return '—';const b=w/(h*h);return b.toFixed(1)+`<div class="muted" style="font-size:13px;margin-top:6px">${b<18.5?'Under':b<25?'Healthy range':b<30?'Over':'High'}</div>`}
+function recentNotes(){return Object.keys(S.days).filter(k=>S.days[k].note).sort().reverse().slice(0,5).map(k=>`<li><span>${esc(S.days[k].note)}</span><small class="muted">${k}</small></li>`).join('')||'<p class="muted">No entries yet. Write one above.</p>'}
+
+function dash(){const t=day(),p=S.profile,h=new Date().getHours(),gr=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+const open=S.todos.filter(x=>!x.done).length,tr=Object.keys(S.done[T()]||{}).length,w=t.water||0,st=t.steps||0;
+return `<div class="head"><div><p class="muted">${new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})}</p><h1>${gr}${p.name?', '+esc(p.name):''}</h1></div><span class="pill">${streak()}-day streak</span></div>
+<div class="bento">
+<div class="card w3"><p class="muted">Water</p><div class="big">${w}<span class="muted" style="font-size:18px"> / ${waterGoal()}</span></div><div class="bar"><i style="width:${pct(w,waterGoal())}%"></i></div><div class="row" style="margin-top:16px"><button class="btn" data-act="water">Add a glass</button></div></div>
+<div class="card w3"><p class="muted">Steps</p><div class="big">${st.toLocaleString()}</div><div class="bar"><i style="width:${pct(st,S.cfg.stepGoal)}%"></i></div><p class="muted" style="margin-top:12px">Goal ${S.cfg.stepGoal.toLocaleString()}</p></div>
+<div class="card"><p class="muted">Sleep</p><div class="big" style="font-size:34px">${t.sleep??'—'}<span class="muted" style="font-size:14px"> h</span></div></div>
+<div class="card"><p class="muted">Mood</p><div class="big" style="font-size:34px">${t.mood?MOODS[t.mood-1]:'—'}</div></div>
+<div class="card"><p class="muted">Screen</p><div class="big" style="font-size:34px">${t.screen??'—'}<span class="muted" style="font-size:14px"> h</span></div></div>
+<div class="card w3"><p class="muted">Open tasks</p><div class="big">${open}</div><button class="btn ghost" style="margin-top:16px" data-nav="todo">Go to to-do</button></div>
+<div class="card w3"><p class="muted">Training today</p><div class="big">${tr}</div><button class="btn ghost" style="margin-top:16px" data-nav="train">Open training</button></div><div class="card w6"><h3>Steps, last 14 days</h3>${line(series('steps',14),'#C9A96E','steps',v=>Math.round(v).toLocaleString())}</div>
+</div>`}
+
+function health(){const t=day(),f=S.profile.sex==='female';
+return `<div class="head"><div><h2>Health</h2><p class="muted">Log today. Everything stays on this device.</p></div></div>
+<div class="bento"><form class="card w4" data-form="health"><h3>Today</h3><div class="grid2" style="margin-top:14px">
+${inp('steps','Steps',t.steps)}${inp('sleep','Sleep (hours)',t.sleep,'0.5')}${inp('weight','Weight (kg)',t.weight,'0.1')}${inp('workout','Workout (minutes)',t.workout)}${inp('waist','Waist (cm)',t.waist,'0.5')}${inp('protein','Protein (g)',t.protein)}${inp('hr','Resting heart rate (bpm, manual)',t.hr)}
+</div><div class="row" style="margin-top:16px"><button class="btn">Save today</button></div></form>
+${medCard()}${sympCard()}${importCard()}${stepCard()}${watchCard()}<div class="card w2"><h3>Body mass index</h3><div class="big" style="font-size:36px;margin-top:12px">${bmi()}</div></div>
+${f?cycleCard():maleCard()}<div class="card w3"><h3>Sleep, 30 days</h3>${line(series('sleep',30),'#C9A96E','sleep',v=>v+' h')}</div><div class="card w3"><h3>Weight, 30 days</h3>${line(series('weight',30),'#B8694F','weight',v=>v+' kg')}</div></div>`}
+function cycleCard(){const s=S.cycleStart;let cd='—';if(s){const n=Math.floor((new Date(T())-new Date(s))/864e5);cd=(n%28)+1}
+return `<form class="card w2" data-form="cycle"><h3>Cycle</h3><label style="margin:12px 0">Last period started<input name="start" type="date" value="${s||''}"></label><p class="muted">Day ${cd} of an assumed 28-day cycle. Estimates only.</p><div class="row" style="margin-top:14px"><button class="btn">Save</button></div></form>`}
+function maleCard(){const n=Object.keys(S.days).sort().slice(-7).filter(k=>S.days[k].workout>0).length;
+return `<div class="card w2"><h3>Recovery</h3><p class="muted" style="margin:12px 0">Aim for 7 to 9 hours of sleep and 2 to 3 strength sessions a week.</p><div class="big" style="font-size:34px">${n}<span class="muted" style="font-size:14px"> / 3 this week</span></div><div class="bar"><i style="width:${pct(n,3)}%"></i></div></div>`}
+
+function mind(){const t=day();
+return `<div class="head"><h2>Mind</h2></div><div class="bento">
+<form class="card w3" data-form="mind"><h3>How are you right now?</h3><div class="row" style="margin:14px 0;flex-wrap:wrap">${MOODS.map((x,i)=>`<label style="flex:1 1 auto"><input type="radio" name="mood" value="${i+1}" ${t.mood==i+1?'checked':''} style="width:auto;margin-right:6px">${x}</label>`).join('')}</div>
+<label>Stress (1 to 10)<input name="stress" type="range" min="1" max="10" value="${t.stress||5}"></label>
+<label style="margin-top:14px">Journal<textarea name="note" rows="4" placeholder="What is on your mind?">${esc(t.note||'')}</textarea></label>
+<div class="row" style="margin-top:14px"><button class="btn">Save entry</button></div></form>
+<div class="card w3"><h3>Reset in one minute</h3><p class="muted" style="margin:12px 0">Breathe in for 4 seconds, hold for 7, breathe out for 8. Repeat four times.</p><div class="big" id="breath">4 · 7 · 8</div><div class="row" style="margin-top:16px"><button class="btn ghost" data-act="breathe">Start</button></div></div>
+<div class="card w6"><h3>Recent entries</h3><ul class="list">${recentNotes()}</ul></div></div>`}
+function breathe(){let r=0,i=0;const el=$('#breath'),steps=[['Breathe in',4000],['Hold',7000],['Breathe out',8000]];
+const go=()=>{if(r>=4){el.textContent='Well done';return}const[s,ms]=steps[i];el.textContent=s;setTimeout(()=>{i=(i+1)%3;if(i===0)r++;go()},ms)};go()}
+
+function digital(){const t=day(),L=S.profile.screenLimit||3,h=t.screen||0;
+return `<div class="head"><h2>Digital wellbeing</h2></div><div class="bento">
+<form class="card w3" data-form="digital"><h3>Screen time today</h3><label style="margin:14px 0">Hours on screens<input name="screen" type="number" step="0.25" min="0" value="${t.screen??''}"></label><label>Phone-free evening?<select name="sunset"><option value="0">No</option><option value="1" ${t.sunset?'selected':''}>Yes</option></select></label><div class="row" style="margin-top:14px"><button class="btn">Save</button></div></form>
+<div class="card w3"><h3>Against your limit</h3><div class="big" style="margin-top:12px">${h}<span class="muted" style="font-size:18px"> / ${L} h</span></div><div class="bar"><i style="width:${pct(h,L)}%;background:${h>L?'var(--clay)':'var(--sage)'}"></i></div><p class="muted" style="margin-top:12px">${h>L?'Over your limit. Try a phone-free hour before bed.':'Within your limit. Keep it up.'}</p></div>
+<div class="card w6"><h3>Habits to try</h3><ul class="list"><li><span>Turn off notifications that are not from people</span></li><li><span>Charge your phone outside the bedroom</span></li><li><span>Switch to grayscale after 9 pm</span></li></ul></div></div>`}
+
+function iq(){return `<div class="head"><div><h2>IQ practice</h2><p class="muted">Ten original practice puzzles written for Web Companion. This is a practice score, not a clinical IQ test or an IQ estimate.</p></div><div class="row" style="flex:0">${lastIq!=null?`<span class="pill">Score ${lastIq}/${Q.length}</span>`:''}${S.iq?`<span class="pill">Best ${S.iq.best}/${Q.length}</span>`:''}</div></div>
+<form class="card w6" data-form="iq">${iqSet().map((x,i)=>{const q=Q[x.qi];return `<fieldset style="border:0;margin-bottom:22px"><legend style="font-weight:600;margin-bottom:10px">${i+1}. ${esc(q[0])}</legend><div class="grid2">${x.p.map((k,j)=>{const o=q[1][k];return `<label style="color:var(--bone);background:rgba(0,0,0,.2);padding:10px 12px;border-radius:14px"><input type="radio" name="q${i}" value="${j}" style="width:auto;margin-right:8px">${esc(o)}</label>`}).join('')}</div></fieldset>`}).join('')}
+<div class="row"><button class="btn">Check my answers</button></div></form><div class="card w6" style="margin-top:16px"><h3>About these puzzles</h3><p class="muted" style="margin-top:10px;font-size:13px">The ten puzzles were written for this app. They have no published norms and have not been validated, so they cannot tell you your IQ. The International Cognitive Ability Resource (ICAR) item bank was not used: its Scientific Use License covers academic research and does not allow these items to be shared in a public app.</p></div>`}
+
+function train(){const d=S.done[T()]||{};
+return `<div class="head"><h2>Training zone</h2><p class="muted">Curated sessions. Tick one off when you finish it.</p></div><div class="bento">${Object.entries(TR).map(([g,items])=>`<div class="card w3"><h3>${g}</h3><ul class="list">${items.map((it,i)=>{const id=g[0]+i,on=!!d[id];return `<li class="${on?'done':''}"><button class="chk ${on?'on':''}" data-act="tick" data-k="${id}" aria-label="Mark done: ${esc(it)}"></button><span>${esc(it)}</span></li>`}).join('')}</ul></div>`).join('')}<div class="card w6"><h3>Where the targets come from</h3><p class="muted" style="margin-top:10px;font-size:13px">Session ideas are general examples, not a prescribed program. The weekly targets follow the World Health Organization's 2020 adult guidelines: 150 to 300 minutes of moderate activity or 75 to 150 minutes of vigorous activity, plus muscle-strengthening on two or more days. Adults 65 and over should add balance work on three or more days. Summaries reviewed: WHO guidelines as reported by ACE Fitness and Safety+Health Magazine. Check with a doctor before starting a new program.</p></div></div>`}
+
+function todo(){const items=S.todos.filter(x=>filt==='all'||(filt==='open'?!x.done:x.done));
+return `<div class="head"><h2>To do</h2><span class="muted">${S.todos.filter(x=>!x.done).length} open</span></div>
+<form class="card w6" data-form="todo"><div class="row"><input name="t" placeholder="Add a task" required><button class="btn">Add</button></div><div class="grid2" style="margin-top:10px"><label>Due<input type="date" name="due"></label><label>Priority<select name="p"><option value="normal">Normal</option><option value="high">High</option></select></label></div>
+<div class="row" style="margin-top:14px;flex-wrap:wrap;justify-content:flex-start">${['all','open','done'].map(f=>`<button type="button" class="pill" style="cursor:pointer;${filt===f?'background:var(--gold);color:var(--ink)':''}" data-act="filter" data-k="${f}">${f}</button>`).join('')}</div>
+<ul class="list">${items.map(x=>`<li class="${x.done?'done':''}"><button type="button" class="chk ${x.done?'on':''}" data-act="todo" data-k="${x.id}" aria-label="Toggle task"></button><span>${esc(x.t)}${x.due?` <small class="muted">due ${x.due}</small>`:''}${x.p==='high'?' <span class="pill" style="background:rgba(184,105,79,.2);color:var(--clay)">high</span>':''}</span><button type="button" class="x" data-act="tdel" data-k="${x.id}" aria-label="Delete task">×</button></li>`).join('')||'<p class="muted">Nothing here yet.</p>'}</ul></form>`}
+
+function goals(){return `<div class="head"><div><h2>Roadmap</h2><p class="muted">Break a goal into milestones. Progress updates as you finish them.</p></div></div>
+<form class="card w6" data-form="goal" style="margin-bottom:16px"><div class="grid2"><label>Goal<input name="title" placeholder="Run a 10 km race" required></label><label>Target date<input name="date" type="date"></label></div><div class="row" style="margin-top:14px;justify-content:flex-end"><button class="btn">Create goal</button></div></form>
+<div class="bento">${S.goals.map(g=>{const dn=g.ms.filter(m=>m.done).length,p=g.ms.length?pct(dn,g.ms.length):0;
+return `<div class="card w3"><div class="row"><h3 style="flex:1">${esc(g.title)}</h3><button class="x" data-act="gdel" data-k="${g.id}" aria-label="Delete goal">×</button></div><p class="muted" style="font-size:13px">${g.date?'Target '+g.date:'No date set'} · ${p}% complete</p><div class="bar"><i style="width:${p}%"></i></div><ul class="list">${g.ms.map((m,i)=>`<li class="${m.done?'done':''}"><button type="button" class="chk ${m.done?'on':''}" data-act="ms" data-k="${g.id}" data-i="${i}" aria-label="Toggle milestone"></button><span>${esc(m.t)}</span></li>`).join('')}</ul><form data-form="ms" data-k="${g.id}" class="row" style="margin-top:12px"><input name="t" placeholder="Add a milestone"><button class="btn ghost">Add</button></form></div>`}).join('')||'<p class="muted">No goals yet. Create one above.</p>'}</div>`}
+
+function summary(){const N={week:7,month:30,year:365}[range],keys=[],d=new Date();
+for(let i=0;i<N;i++){keys.unshift(T(d));d.setDate(d.getDate()-1)}
+const vals=f=>keys.map(k=>S.days[k]?.[f]).filter(v=>v!=null);
+const avg=(f,dp=1)=>{const v=vals(f);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(dp):'—'};
+const tot=f=>vals(f).reduce((a,b)=>a+b,0);
+const done=S.todos.filter(x=>x.done&&keys.includes(x.at)).length;
+const sess=keys.reduce((a,k)=>a+Object.keys(S.done[k]||{}).length,0);
+const wk=keys.filter(k=>S.days[k]?.workout>0).length;
+let data;
+if(range==='year'){const g={};keys.forEach(k=>{const s=S.days[k]?.steps;if(s!=null){const m=k.slice(5,7);(g[m]||(g[m]=[])).push(s)}});data=Object.keys(g).sort().map(m=>[m,g[m].reduce((a,b)=>a+b,0)/g[m].length])}
+else data=keys.map(k=>[k.slice(8),S.days[k]?.steps||0]);
+const max=Math.max(1,...data.map(x=>x[1]));
+const seg=[['week','Week'],['month','Month'],['year','Year']];
+const kpi=(w,l,v,u='')=>`<div class="card ${w}"><p class="muted">${l}</p><div class="big" style="font-size:34px;margin-top:8px">${v}<span class="muted" style="font-size:14px">${u}</span></div></div>`;
+return `<div class="head"><h2>Summary</h2><div class="row" style="flex:0">${seg.map(([k,l])=>`<button class="pill" style="cursor:pointer;${range===k?'background:var(--gold);color:var(--ink)':''}" data-act="range" data-k="${k}">${l}</button>`).join('')}</div></div>
+<div class="bento"><div class="card w6"><h3>Steps ${range==='year'?'by month, average':'per day'}</h3><div class="chart">${data.map(([l,v])=>`<div style="height:${v/max*100}%" title="${l}: ${Math.round(v)}"><small>${l}</small></div>`).join('')}</div></div>
+<div class="card w3"><h3>Sleep</h3>${line(series('sleep',N),'#C9A96E','sleep',v=>v+' h')}</div><div class="card w3"><h3>Mood</h3>${line(series('mood',N),'#8FA58B','mood',v=>v+' / 5')}</div><div class="card w3"><h3>Weight</h3>${line(series('weight',N),'#B8694F','weight',v=>v+' kg')}</div><div class="card w3"><h3>Heart rate</h3>${line(series('hr',N),'#e3c58d','heart rate',v=>v+' bpm')}</div>
+${kpi('w2','Average sleep',avg('sleep'),' h')}${kpi('w2','Distance walked',(tot('steps')*stride()/100000).toFixed(1),' km')}${kpi('w2','Average steps',avg('steps',0))}${kpi('w2','Average mood',avg('mood'),' / 5')}
+${kpi('w2','Workout minutes',tot('workout'),'')}${kpi('w2','Tasks done',done)}${kpi('w2','Training sessions',sess)}
+${kpi('w3','Average water',avg('water'),' glasses')}${kpi('w3','Active workout days',wk)}</div>`}
+
+function me(){const p=S.profile;
+return `<div class="head"><h2>Profile</h2></div>${syncCard()}${profileCard()}${setupCard()}<div class="bento">${reminderCard()}${exportCard()}</div><form class="card w6" data-form="me"><div class="grid2"><label>Name<input name="name" value="${esc(p.name)}"></label><label>Sex (sets which tracking you see)<select name="sex"><option value="female" ${p.sex==='female'?'selected':''}>Female</option><option value="male" ${p.sex==='male'?'selected':''}>Male</option></select></label><label>Height (cm)<input name="height" type="number" value="${p.height}"></label><label>Daily screen limit (hours)<input name="screenLimit" type="number" step="0.5" value="${p.screenLimit}"></label><label>Stride length (cm, blank uses height)<input name="stride" type="number" value="${p.stride||''}"></label><label>Theme<select name="theme">${[['luxury','Luxury'],['glass','Glassmorphic'],['neo','Neomorphic'],['bento','Bento grid'],['minimal','Minimalist']].map(([v,l])=>`<option value="${v}" ${(p.theme||'luxury')===v?'selected':''}>${l}</option>`).join('')}</select></label></div>
+<div class="row" style="margin-top:18px;justify-content:space-between"><button class="btn">Save profile</button><button type="button" class="btn ghost" data-act="reset">${armed?'Tap again to erase everything':'Erase all data'}</button></div></form>`}
+
+function render(){
+  document.body.className='theme-'+(S.profile.theme||'luxury');
+  $('#nav').innerHTML='<div class="brand">Web Companion</div>'+VIEWS.map(([k,l])=>`<button class="${k===view?'on':''}" data-nav="${k}" ${k===view?'aria-current="page"':''}>${l}</button>`).join('');
+  const screens={dash,health,mind,digital,iq,train,todo,goals,summary,me};
+  if(!S.onboarded){$('#nav').innerHTML='';$('#main').innerHTML=onboard();return}
+  $('#main').innerHTML=screens[view]();applyHidden();
+}
+
+document.addEventListener('click',e=>{
+  const n=e.target.closest('[data-nav]');if(n){view=n.dataset.nav;armed=false;iqCur=null;render();return}
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,k=b.dataset.k,i=+b.dataset.i,t=day();
+  if(a==='breathe'){breathe();return}
+  if(a==='obpick'){ob={type:k};render();return}
+  if(a==='obback'){ob={type:null};render();return}
+  if(a==='switch'){switchTo(k);return}
+  if(a==='pdel'){if(pendingDel!==k){pendingDel=k;render();return}deleteProfile(k);return}
+  if(a==='newprof'){createProfile('New profile','🌿');return}
+  if(a==='cfgexport'){exportCfg();return}
+  if(a==='applytype'){applyType(k);return}
+  if(a==='stepsStart'){stepsStart();return}
+  if(a==='stepsStop'){stepsStop();return}
+  if(a==='watch'){if(hw.dev&&hw.dev.gatt.connected){hw.dev.gatt.disconnect();hw.dev=null;hw.msg='Disconnected.';render();return}watchConnect();return}
+  if(a==='medtake'){t.meds=t.meds||{};t.meds[k]?delete t.meds[k]:t.meds[k]=1}
+  else if(a==='meddel')S.meds=(S.meds||[]).filter(m=>m.id!=k);
+  else if(a==='remdel')S.reminders=(S.reminders||[]).filter(x=>x.id!=k);
+  else if(a==='remallow'){if('Notification' in window)Notification.requestPermission().then(()=>render())}
+  else if(a==='csv'){exportCSV();return}
+  if(a==='water')t.water=(t.water||0)+1;
+  else if(a==='tick'){const d=S.done[T()]||(S.done[T()]={});d[k]?delete d[k]:d[k]=1}
+  else if(a==='todo'){const x=S.todos.find(x=>x.id==k);if(x){x.done=!x.done;x.at=T()}}
+  else if(a==='tdel')S.todos=S.todos.filter(x=>x.id!=k);
+  else if(a==='filter')filt=k;
+  else if(a==='ms'){const g=S.goals.find(g=>g.id==k);if(g&&g.ms[i])g.ms[i].done=!g.ms[i].done}
+  else if(a==='gdel')S.goals=S.goals.filter(g=>g.id!=k);
+  else if(a==='range')range=k;
+  else if(a==='reset'){if(!armed){armed=true;render();return}S=blank();armed=false}
+  save();render();
+});
+
+document.addEventListener('change',e=>{const f=e.target;if(!f.matches||!f.matches('input[data-import]')||!f.files[0])return;f.files[0].text().then(txt=>{try{importWatch(JSON.parse(txt))}catch(err){impMsg='That file is not a valid Web Companion export.'}render()})});
+document.addEventListener('submit',e=>{
+  e.preventDefault();const f=e.target,kind=f.dataset.form,fd=Object.fromEntries(new FormData(f));
+  if(kind==='health'){const t=day();['steps','sleep','weight','workout','waist','protein','hr'].forEach(k=>t[k]=num(fd[k]))}
+  else if(kind==='cycle')S.cycleStart=fd.start||null;
+  else if(kind==='mind'){const t=day();t.mood=+fd.mood||null;t.stress=+fd.stress;t.note=(fd.note||'').trim()}
+  else if(kind==='digital'){const t=day();t.screen=num(fd.screen);t.sunset=fd.sunset==='1'}
+  else if(kind==='iq'){const set=iqSet();let s=0;set.forEach((x,i)=>{if(x.p[+fd['q'+i]]===Q[x.qi][2])s++});S.iq={best:Math.max(S.iq?.best||0,s)};lastIq=s;iqCur=null}
+  else if(kind==='todo'){if(fd.t.trim())S.todos.unshift({id:Date.now(),t:fd.t.trim(),done:false,due:fd.due||null,p:fd.p||'normal'})}
+  else if(kind==='goal'){if(fd.title.trim())S.goals.unshift({id:Date.now(),title:fd.title.trim(),date:fd.date,ms:[]})}
+  else if(kind==='ms'){const g=S.goals.find(g=>g.id==f.dataset.k);if(g&&fd.t.trim())g.ms.push({t:fd.t.trim(),done:false})}
+  else if(kind==='med'){if(fd.name&&fd.name.trim())S.meds=(S.meds||[]).concat([{id:Date.now(),name:fd.name.trim(),dose:(fd.dose||'').trim()}])}
+  else if(kind==='symp'){const d=day();d.symptoms=[...f.querySelectorAll('input[name=s]:checked')].map(x=>x.value);d.sev=+fd.sev||1}
+  else if(kind==='rem'){if(fd.label&&fd.time)S.reminders=(S.reminders||[]).concat([{id:Date.now(),label:fd.label.trim(),time:fd.time}])}
+  else if(kind==='onboard'){const picked=[...f.querySelectorAll('input[name=t]:checked')].map(x=>x.value);const trackers=Object.fromEntries(Object.keys(HIDE).map(k=>[k,picked.includes(k)]));finishOnboarding({name:(fd.name||'').trim()||'Me',avatar:fd.avatar||'🌿'},{trackers,stepGoal:+fd.stepGoal||8000},+fd.screenLimit||3);ob={type:null}}
+  else if(kind==='cfg'){const picked=[...f.querySelectorAll('input[name=t]:checked')].map(x=>x.value);S.cfg.trackers=Object.fromEntries(Object.keys(HIDE).map(k=>[k,picked.includes(k)]));S.cfg.stepGoal=+fd.stepGoal||8000;const nm=(fd.name||'').trim();if(nm)S.profile.name=nm;const p=profiles.find(x=>x.id===curId);if(p){p.name=S.profile.name||p.name;p.avatar=fd.avatar||p.avatar;saveList()}profMsg=''}
+  else if(kind==='me')Object.assign(S.profile,{name:fd.name.trim(),sex:fd.sex,height:+fd.height||170,screenLimit:+fd.screenLimit||3,stride:+fd.stride||null,theme:fd.theme||'luxury'});
+  save();render();
+});
+render();
+</script><script>if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script><script src="config.js"></script><script src="sync.js"></script></body></html>
